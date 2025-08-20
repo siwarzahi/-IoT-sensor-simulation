@@ -2,52 +2,19 @@ import random
 import time
 import matplotlib.pyplot as plt
 import smtplib
-
-def get_sensor_data():
-    temp = round(random.uniform(20.0, 30.0), 2)  # Température simulée
-    hum = round(random.uniform(40.0, 70.0), 2)   # Humidité simulée
-    return temp, hum
-
-while True:
-    temperature, humidity = get_sensor_data()
-    print(f"Temp: {temperature}°C, Humidity: {humidity}%")
-    time.sleep(2)  # Met à jour toutes les 2 secondes
-
-temps = []
-temperature_data = []
-humidity_data = []
-
-plt.show()
- # Mode interactif
-import matplotlib.pyplot as plt
-
-temps = []
-temperature_data = []
-humidity_data = []
-
-plt.show()  # Mode interactif
-
-for i in range(50):
-    temp, hum = get_sensor_data()
-    temperature_data.append(temp)
-    humidity_data.append(hum)
-    temps.append(i)
-
-    plt.clf()
-    plt.plot(temps, temperature_data, label='Temp (°C)')
-    plt.plot(temps, humidity_data, label='Humidity (%)')
-    plt.xlabel('Time')
-    plt.ylabel('Value')
-    plt.legend()
-    plt.pause(0.1)
-
-
 from email.mime.text import MIMEText
 
+# Fonction pour simuler le capteur
+def get_sensor_data():
+    temp = round(random.uniform(20.0, 35.0), 2)
+    hum = round(random.uniform(40.0, 70.0), 2)
+    return temp, hum
+
+# Fonction pour envoyer l'email
 def send_email(subject, body):
     sender = 'siwarzahi10@gmail.com'
     receiver = 'zasiwar6@gmail.com'
-    password = 'pelr ennj odam nmrs'  # Mot de passe application Gmail
+    password = 'pelr ennj odam nmrs'
 
     msg = MIMEText(body)
     msg['Subject'] = subject
@@ -58,5 +25,35 @@ def send_email(subject, body):
         server.login(sender, password)
         server.sendmail(sender, receiver, msg.as_string())
 
-# Exemple d'utilisation
-send_email("Capteur IoT Alert", "Température simulée: 28°C")
+# Listes pour le graphe
+temps = []
+temperature_data = []
+humidity_data = []
+
+plt.ion()  # Mode interactif
+
+# Boucle principale
+for i in range(50):  # 50 mesures pour l'exemple
+    temp, hum = get_sensor_data()
+    
+    # Ajouter les valeurs aux listes
+    temperature_data.append(temp)
+    humidity_data.append(hum)
+    temps.append(i)
+    
+    # Afficher le graphe
+    plt.clf()
+    plt.plot(temps, temperature_data, label='Température (°C)')
+    plt.plot(temps, humidity_data, label='Humidité (%)')
+    plt.xlabel('Mesure')
+    plt.ylabel('Valeur')
+    plt.legend()
+    plt.pause(0.1)
+    
+    print(f"Température: {temp}°C, Humidité: {hum}%")
+    
+    # Vérifier seuil pour envoyer email
+    if temp > 30:
+        send_email("Alerte Température", f"La température a dépassé 30°C: {temp}°C")
+    
+    time.sleep(1)
